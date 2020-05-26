@@ -38,29 +38,28 @@ class ComicImageView : AppCompatImageView {
 //            attacher.zoomable = value
 //        }
 
-
-    override fun setImageDrawable(drawable: Drawable?) {
-        super.setImageDrawable(drawable)
-        attacher?.reset()
-    }
-
     fun setImageDrawableMy(drawable: Drawable?) {
         super.setImageDrawable(drawable)
     }
 
+    override fun setImageDrawable(drawable: Drawable?) {
+        super.setImageDrawable(drawable)
+        attacher?.resetDrawable()
+    }
+
     override fun setImageResource(resId: Int) {
         super.setImageResource(resId)
-        attacher?.reset()
+        attacher?.resetDrawable()
     }
 
     override fun setImageURI(uri: Uri?) {
         super.setImageURI(uri)
-        attacher?.reset()
+        attacher?.resetDrawable()
     }
 
     override fun setFrame(l: Int, t: Int, r: Int, b: Int): Boolean {
         val changed = super.setFrame(l, t, r, b)
-        if (changed) attacher?.reset()
+        if (changed) attacher?.resetDrawable()
         return changed
     }
 }

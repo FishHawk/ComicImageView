@@ -246,14 +246,20 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         return fixScale * matrix.getScale()
     }
 
-    fun reset() {
+    fun resetDrawable() {
         drawable = imageView.drawable
+        reset()
+    }
+
+    fun reset() {
         if (drawable == null) return
 
         val viewWidth = getImageViewWidth(imageView)
         val viewHeight = getImageViewHeight(imageView)
         val drawableWidth = drawable.intrinsicWidth
         val drawableHeight = drawable.intrinsicHeight
+        println(drawableHeight)
+        println(drawableWidth)
 
         if (viewWidth == 0 || viewHeight == 0) return
 
