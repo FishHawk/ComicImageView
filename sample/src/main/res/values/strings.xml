@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ComicImageView</string>
+
+    <string name="menu_viewpager2_ltr">Left to Right</string>
+    <string name="menu_viewpager2_rtl">Right to Left</string>
+    <string name="menu_viewpager2_vertical">Vertical</string>
 </resources>

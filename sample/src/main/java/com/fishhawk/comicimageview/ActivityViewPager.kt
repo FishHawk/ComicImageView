@@ -11,7 +11,7 @@ class ActivityViewPager : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_view_pager)
+        setContentView(R.layout.activity_viewpager)
 
         val viewPager = findViewById<ViewPager>(R.id.view_pager)
         viewPager.offscreenPageLimit = 3
