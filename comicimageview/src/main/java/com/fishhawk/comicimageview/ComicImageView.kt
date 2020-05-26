@@ -16,27 +16,34 @@ class ComicImageView : AppCompatImageView {
             : super(context, attr, defStyle)
 
     private var attacher: ComicImageViewAttacher? = ComicImageViewAttacher(this)
-//    private var pendingScaleType: ScaleType? = null
-//
-//    override fun setScaleType(scaleType: ScaleType) {
-//        if (attacher == null) {
-//            pendingScaleType = scaleType
-//        } else {
-//            attacher.setScaleType(scaleType)
-//        }
-//    }
+    private var pendingScaleType: ScaleType? = null
+
+    override fun setScaleType(scaleType: ScaleType) {
+        if (attacher == null) {
+            pendingScaleType = scaleType
+        } else {
+            attacher!!.scaleType = scaleType
+        }
+    }
+
+    override fun getScaleType(): ScaleType {
+        return attacher!!.scaleType
+    }
 
     init {
         super.setScaleType(ScaleType.MATRIX)
-//        pendingScaleType?.let { scaleType = it }
-//        pendingScaleType = null
+        pendingScaleType?.let {
+            attacher!!.scaleType = scaleType
+        }
+        pendingScaleType = null
     }
 
-//    var zoomable: Boolean
-//        get() = attacher.zoomable
-//        set(value) {
-//            attacher.zoomable = value
-//        }
+    var zoomable: Boolean
+        get() = attacher!!.zoomable
+        set(value) {
+            attacher!!.zoomable = value
+        }
+
 
     fun setImageDrawableMy(drawable: Drawable?) {
         super.setImageDrawable(drawable)

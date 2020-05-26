@@ -2,6 +2,7 @@ package com.fishhawk.comicimageview
 
 import android.annotation.SuppressLint
 import android.graphics.Matrix
+import android.graphics.Matrix.ScaleToFit
 import android.graphics.RectF
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -12,6 +13,7 @@ import android.view.ViewParent
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import androidx.core.graphics.drawable.toBitmap
+import kotlin.math.max
 import kotlin.math.min
 
 
@@ -77,10 +79,14 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     private var fixScale = 1.0f
     private val matrix: Matrix = Matrix()
 
-    private var zoomable = true
-
-    //    private var mScaleType = ScaleType.FIT_CENTER
-    private var mScaleType = ScaleType.CENTER_INSIDE
+    var zoomable = true
+    var scaleType = ScaleType.FIT_CENTER
+        set(value) {
+            if (isSupportedScaleType(value) && value != field) {
+                field = value
+                resetLayout()
+            }
+        }
 
 
     private var customGestureDetector = CustomGestureDetector(
@@ -136,8 +142,8 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
             if (mHorizontalScrollEdge == HORIZONTAL_EDGE_BOTH
                 || mHorizontalScrollEdge == HORIZONTAL_EDGE_LEFT && dx >= 1f
                 || mHorizontalScrollEdge == HORIZONTAL_EDGE_RIGHT && dx <= -1f
-                || mVerticalScrollEdge == VERTICAL_EDGE_TOP && dy >= 1f
-                || mVerticalScrollEdge == VERTICAL_EDGE_BOTTOM && dy <= -1f
+//                || mVerticalScrollEdge == VERTICAL_EDGE_TOP && dy >= 1f
+//                || mVerticalScrollEdge == VERTICAL_EDGE_BOTTOM && dy <= -1f
             ) {
                 parent.requestDisallowInterceptTouchEvent(false)
             }
@@ -179,7 +185,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
     ) {
         if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
-            reset()
+            resetLayout()
         }
     }
 
@@ -248,10 +254,10 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
 
     fun resetDrawable() {
         drawable = imageView.drawable
-        reset()
+        resetLayout()
     }
 
-    private fun reset() {
+    private fun resetLayout() {
         if (drawable == null) return
 
         val viewWidth = getImageViewWidth(imageView)
@@ -265,9 +271,48 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         val widthScale = viewWidth.toFloat() / drawableWidth
         val heightScale = viewHeight.toFloat() / drawableHeight
 
-        initScale = min(1.0f, min(widthScale, heightScale))
-        initTranslateX = (viewWidth - drawableWidth * initScale) / 2f
-        initTranslateY = (viewHeight - drawableHeight * initScale) / 2f
+        when (scaleType) {
+            ScaleType.CENTER -> {
+                initScale = 1.0F
+                initTranslateX = (viewWidth - drawableWidth) / 2f
+                initTranslateY = (viewHeight - drawableHeight) / 2f
+            }
+            ScaleType.CENTER_CROP -> {
+                initScale = max(widthScale, heightScale)
+                initTranslateX = (viewWidth - drawableWidth * initScale) / 2f
+                initTranslateY = (viewHeight - drawableHeight * initScale) / 2f
+            }
+            ScaleType.CENTER_INSIDE -> {
+                initScale = min(1.0f, min(widthScale, heightScale))
+                initTranslateX = (viewWidth - drawableWidth * initScale) / 2f
+                initTranslateY = (viewHeight - drawableHeight * initScale) / 2f
+            }
+            else -> {
+                val tempSrc = RectF(0F, 0F, drawableWidth.toFloat(), drawableHeight.toFloat())
+                val tempDst = RectF(0F, 0F, viewWidth.toFloat(), viewHeight.toFloat())
+                val tempMatrix = Matrix()
+                tempMatrix.reset()
+                when (scaleType) {
+                    ScaleType.FIT_CENTER -> tempMatrix.setRectToRect(
+                        tempSrc, tempDst, ScaleToFit.CENTER
+                    )
+                    ScaleType.FIT_START -> tempMatrix.setRectToRect(
+                        tempSrc, tempDst, ScaleToFit.START
+                    )
+                    ScaleType.FIT_END -> tempMatrix.setRectToRect(
+                        tempSrc, tempDst, ScaleToFit.END
+                    )
+                    ScaleType.FIT_XY -> tempMatrix.setRectToRect(
+                        tempSrc, tempDst, ScaleToFit.FILL
+                    )
+                    else -> {}
+                }
+                initScale = tempMatrix.getScale()
+                val (tx, ty) = tempMatrix.getTranslate()
+                initTranslateX = tx
+                initTranslateY = ty
+            }
+        }
         matrix.reset()
         matrix.setTranslate(initTranslateX, initTranslateY)
         moveScaleFromMatrixToBitmap()
@@ -310,7 +355,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         val viewHeight = getImageViewHeight(imageView)
         when {
             height <= viewHeight -> {
-                deltaY = when (mScaleType) {
+                deltaY = when (scaleType) {
                     ScaleType.FIT_START -> -rect.top
                     ScaleType.FIT_END -> viewHeight - height - rect.top
                     else -> (viewHeight - height) / 2 - rect.top
@@ -333,7 +378,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         when {
             width <= viewWidth -> {
                 mHorizontalScrollEdge = HORIZONTAL_EDGE_BOTH
-                deltaX = when (mScaleType) {
+                deltaX = when (scaleType) {
                     ScaleType.FIT_START -> -rect.left
                     ScaleType.FIT_END -> viewWidth - width - rect.left
                     else -> (viewWidth - width) / 2 - rect.left

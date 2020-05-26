@@ -8,7 +8,7 @@ import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 
 class CaseListAdapter(
-    private val activity: ActicityMain
+    private val activity: ActivityMain
 ) : RecyclerView.Adapter<CaseListAdapter.ViewHolder>() {
 
     private val cases = listOf(

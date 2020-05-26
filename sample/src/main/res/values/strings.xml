@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">ComicImageView</string>
 
+    <string name="menu_simple_fit_center">Change to FIT_CENTER</string>
+    <string name="menu_simple_fit_start">Change to FIT_START</string>
+    <string name="menu_simple_fit_end">Change to FIT_END</string>
+    <string name="menu_simple_fit_xy">Change to FIT_XY</string>
+    <string name="menu_simple_center">Change to CENTER</string>
+    <string name="menu_simple_center_crop">Change to CENTER_CROP</string>
+    <string name="menu_simple_center_inside">Change to CENTER_INSIDE</string>
+
     <string name="menu_viewpager2_ltr">Left to Right</string>
     <string name="menu_viewpager2_rtl">Right to Left</string>
     <string name="menu_viewpager2_vertical">Vertical</string>
