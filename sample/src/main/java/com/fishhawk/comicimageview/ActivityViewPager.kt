@@ -7,11 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 
-class ViewPagerActivity : AppCompatActivity() {
+class ActivityViewPager : AppCompatActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_pager)
         val viewPager = findViewById<ViewPager>(R.id.view_pager)
+        viewPager.offscreenPageLimit = 3
         viewPager.adapter = SamplePagerAdapter()
     }
 

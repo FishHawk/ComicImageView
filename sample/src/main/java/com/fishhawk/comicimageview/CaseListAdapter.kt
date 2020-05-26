@@ -8,12 +8,13 @@ import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 
 class CaseListAdapter(
-    private val activity: MainActivity
+    private val activity: ActicityMain
 ) : RecyclerView.Adapter<CaseListAdapter.ViewHolder>() {
 
     private val cases = listOf(
-        Case("Simple", SimpleActivity::class.java),
-        Case("View Pager", ViewPagerActivity::class.java)
+        Case("Simple", ActivitySimple::class.java),
+        Case("View Pager", ActivityViewPager::class.java),
+        Case("View Pager 2", ActivityViewPager2::class.java)
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
