@@ -8,27 +8,27 @@ import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 
 class ActivityViewPager : AppCompatActivity() {
-    public override fun onCreate(savedInstanceState: Bundle?) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_pager)
+
         val viewPager = findViewById<ViewPager>(R.id.view_pager)
         viewPager.offscreenPageLimit = 3
         viewPager.adapter = SamplePagerAdapter()
     }
 
     internal class SamplePagerAdapter : PagerAdapter() {
-        override fun getCount(): Int {
-            return sDrawables.size
-        }
+        private val items = intArrayOf(
+            R.drawable.pic, R.drawable.pic, R.drawable.pic,
+            R.drawable.pic, R.drawable.pic, R.drawable.pic
+        )
 
-        override fun instantiateItem(
-            container: ViewGroup,
-            position: Int
-        ): View {
+        override fun getCount(): Int = items.size
+
+        override fun instantiateItem(container: ViewGroup, position: Int): View {
             val photoView = ComicImageView(container.context)
-            photoView.setImageResource(
-                sDrawables[position]
-            )
+            photoView.setImageResource(items[position])
 
             container.addView(
                 photoView,
@@ -38,26 +38,12 @@ class ActivityViewPager : AppCompatActivity() {
             return photoView
         }
 
-        override fun destroyItem(
-            container: ViewGroup,
-            position: Int,
-            `object`: Any
-        ) {
+        override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
             container.removeView(`object` as View)
         }
 
-        override fun isViewFromObject(
-            view: View,
-            `object`: Any
-        ): Boolean {
+        override fun isViewFromObject(view: View, `object`: Any): Boolean {
             return view === `object`
-        }
-
-        companion object {
-            private val sDrawables = intArrayOf(
-                R.drawable.pic, R.drawable.pic, R.drawable.pic,
-                R.drawable.pic, R.drawable.pic, R.drawable.pic
-            )
         }
     }
 }

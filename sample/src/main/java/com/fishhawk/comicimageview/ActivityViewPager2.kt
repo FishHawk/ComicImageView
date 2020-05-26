@@ -9,15 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 
 class ActivityViewPager2 : AppCompatActivity() {
-    public override fun onCreate(savedInstanceState: Bundle?) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_pager2)
+
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
         viewPager.offscreenPageLimit = 3
-        viewPager.adapter = PagerAdapter()
+        viewPager.adapter = SamplePagerAdapter()
     }
 
-    internal class PagerAdapter : RecyclerView.Adapter<PagerAdapter.ViewHolder>() {
+    internal class SamplePagerAdapter : RecyclerView.Adapter<SamplePagerAdapter.ViewHolder>() {
         private val items = intArrayOf(
             R.drawable.pic, R.drawable.pic, R.drawable.pic,
             R.drawable.pic, R.drawable.pic, R.drawable.pic
