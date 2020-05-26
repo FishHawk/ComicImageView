@@ -326,10 +326,6 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         moveScaleFromMatrixToBitmap()
     }
 
-
-    /*
-    * change ImageView
-    */
     private fun moveScaleFromMatrixToBitmap() {
         val scale = matrix.getScale()
         val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale * scale)
@@ -359,7 +355,6 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                 applyMatrix()
             }
         }
-
     }
 
     private fun applyMatrix() {
@@ -373,7 +368,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         return rect
     }
 
-    private fun correctBound(): Boolean {
+    private fun correctBound() {
         val rect: RectF = getDisplayRect(matrix)
         val height = rect.height()
         val width = rect.width()
@@ -423,9 +418,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                 mHorizontalScrollEdge = HORIZONTAL_EDGE_NONE
             }
         }
-        // Finally actually translate the matrix
         matrix.postTranslate(deltaX, deltaY)
-        return true
     }
 
 
