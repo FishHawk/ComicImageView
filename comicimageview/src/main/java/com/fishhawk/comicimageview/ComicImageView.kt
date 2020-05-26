@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.graphics.drawable.toBitmap
 
 
 class ComicImageView : AppCompatImageView {
@@ -42,26 +41,26 @@ class ComicImageView : AppCompatImageView {
 
     override fun setImageDrawable(drawable: Drawable?) {
         super.setImageDrawable(drawable)
-        attacher?.reset(drawable)
+        attacher?.reset()
     }
 
     fun setImageDrawableMy(drawable: Drawable?) {
         super.setImageDrawable(drawable)
     }
 
-//    override fun setImageResource(resId: Int) {
-//        super.setImageResource(resId)
-//        attacher?.reset()
-//    }
+    override fun setImageResource(resId: Int) {
+        super.setImageResource(resId)
+        attacher?.reset()
+    }
 
-//    override fun setImageURI(uri: Uri?) {
-//        super.setImageURI(uri)
-//        attacher?.reset()
-//    }
-//
-//    override fun setFrame(l: Int, t: Int, r: Int, b: Int): Boolean {
-//        val changed = super.setFrame(l, t, r, b)
-//        if (changed) attacher?.reset()
-//        return changed
-//    }
+    override fun setImageURI(uri: Uri?) {
+        super.setImageURI(uri)
+        attacher?.reset()
+    }
+
+    override fun setFrame(l: Int, t: Int, r: Int, b: Int): Boolean {
+        val changed = super.setFrame(l, t, r, b)
+        if (changed) attacher?.reset()
+        return changed
+    }
 }

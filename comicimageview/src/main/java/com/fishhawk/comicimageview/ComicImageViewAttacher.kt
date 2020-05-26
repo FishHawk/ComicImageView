@@ -179,7 +179,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
     ) {
         if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
-            reset(imageView.drawable)
+            reset()
         }
     }
 
@@ -246,9 +246,9 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         return fixScale * matrix.getScale()
     }
 
-    fun reset(drawable: Drawable?) {
+    fun reset() {
+        drawable = imageView.drawable
         if (drawable == null) return
-        this.drawable = drawable
 
         val viewWidth = getImageViewWidth(imageView)
         val viewHeight = getImageViewHeight(imageView)
