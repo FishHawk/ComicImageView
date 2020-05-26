@@ -9,10 +9,13 @@ import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import android.view.ViewParent
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import androidx.core.graphics.drawable.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.min
 
@@ -117,7 +120,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
             override fun onScaleEnd(detector: ScaleGestureDetector?) {
                 val scale = getScale()
                 if (scale in minScale..maxScale)
-                    moveScaleFromMatrixToBitmap()
+                    moveScaleFromMatrixToBitmapAsync()
             }
 
             override fun onDoubleTap(e: MotionEvent): Boolean {
@@ -328,16 +331,35 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     * change ImageView
     */
     private fun moveScaleFromMatrixToBitmap() {
-        val (tx, ty) = matrix.getTranslate()
-        fixScale *= matrix.getScale()
-
-        val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale)
+        val scale = matrix.getScale()
+        val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale * scale)
         val newD = BitmapDrawable(imageView.context.resources, bitmap)
         (imageView as ComicImageView).setImageDrawableMy(newD)
 
+        val (tx, ty) = matrix.getTranslate()
+        fixScale *= scale
         matrix.reset()
         matrix.setTranslate(tx, ty)
         applyMatrix()
+    }
+
+    private fun moveScaleFromMatrixToBitmapAsync() {
+        val scale = matrix.getScale()
+
+        GlobalScope.launch(Dispatchers.Default) {
+            val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale * scale)
+            withContext(Dispatchers.Main) {
+                val newD = BitmapDrawable(imageView.context.resources, bitmap)
+                (imageView as ComicImageView).setImageDrawableMy(newD)
+
+                val (tx, ty) = matrix.getTranslate()
+                fixScale *= scale
+                matrix.reset()
+                matrix.setTranslate(tx, ty)
+                applyMatrix()
+            }
+        }
+
     }
 
     private fun applyMatrix() {
