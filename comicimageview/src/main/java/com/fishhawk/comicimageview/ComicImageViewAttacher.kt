@@ -65,8 +65,8 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     var midScale = DEFAULT_MID_SCALE
     var maxScale = DEFAULT_MAX_SCALE
 
-    private val mAllowParentInterceptOnEdge = true
-
+    var allowParentInterceptOnHorizontalEdge = true
+    var allowParentInterceptOnVerticalEdge = false
     private var mHorizontalScrollEdge = HORIZONTAL_EDGE_BOTH
     private var mVerticalScrollEdge = VERTICAL_EDGE_BOTH
 
@@ -137,18 +137,22 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         })
 
     private fun interceptTouchEventIfNeed(dx: Float, dy: Float) {
-        val parent: ViewParent = imageView.parent
-        if (mAllowParentInterceptOnEdge && !customGestureDetector.isScaling) {
-            if (mHorizontalScrollEdge == HORIZONTAL_EDGE_BOTH
-                || mHorizontalScrollEdge == HORIZONTAL_EDGE_LEFT && dx >= 1f
-                || mHorizontalScrollEdge == HORIZONTAL_EDGE_RIGHT && dx <= -1f
-//                || mVerticalScrollEdge == VERTICAL_EDGE_TOP && dy >= 1f
-//                || mVerticalScrollEdge == VERTICAL_EDGE_BOTTOM && dy <= -1f
+        if (!customGestureDetector.isScaling) {
+            val reachHorizontalEdge = mHorizontalScrollEdge == HORIZONTAL_EDGE_BOTH
+                    || mHorizontalScrollEdge == HORIZONTAL_EDGE_LEFT && dx >= 1f
+                    || mHorizontalScrollEdge == HORIZONTAL_EDGE_RIGHT && dx <= -1f
+
+            val reachVerticalEdge = mVerticalScrollEdge == VERTICAL_EDGE_BOTH
+                    || mVerticalScrollEdge == VERTICAL_EDGE_TOP && dy >= 1f
+                    || mVerticalScrollEdge == VERTICAL_EDGE_BOTTOM && dy <= -1f
+
+            if ((allowParentInterceptOnHorizontalEdge && reachHorizontalEdge)
+                || (allowParentInterceptOnVerticalEdge && reachVerticalEdge)
             ) {
-                parent.requestDisallowInterceptTouchEvent(false)
+                imageView.parent.requestDisallowInterceptTouchEvent(false)
             }
         } else {
-            parent.requestDisallowInterceptTouchEvent(true)
+            imageView.parent.requestDisallowInterceptTouchEvent(true)
         }
     }
 

@@ -48,6 +48,7 @@ class ComicImageView : AppCompatImageView {
         return attacher.scaleType
     }
 
+
     private var attacher: ComicImageViewAttacher = ComicImageViewAttacher(this)
     private var pendingScaleType: ScaleType? = null
 
@@ -59,19 +60,24 @@ class ComicImageView : AppCompatImageView {
         pendingScaleType = null
     }
 
+
     fun setImageDrawableMy(drawable: Drawable?) {
         super.setImageDrawable(drawable)
     }
 
-    var zoomable: Boolean = attacher.zoomable
 
-    var minimumScale: Float = attacher.minScale
-    var mediumScale: Float = attacher.midScale
-    var maximumScale: Float = attacher.maxScale
+    var zoomable = attacher.zoomable
+
+    var minimumScale = attacher.minScale
+    var mediumScale = attacher.midScale
+    var maximumScale = attacher.maxScale
 
     fun setScaleLevels(minimumScale: Float, mediumScale: Float, maximumScale: Float) {
         attacher.minScale = minimumScale
         attacher.midScale = mediumScale
         attacher.maxScale = maximumScale
     }
+
+    var allowParentInterceptOnHorizontalEdge = attacher.allowParentInterceptOnHorizontalEdge
+    var allowParentInterceptOnVerticalEdge = attacher.allowParentInterceptOnVerticalEdge
 }
