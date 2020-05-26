@@ -9,9 +9,7 @@ import org.opencv.imgproc.Imgproc
 
 object ScaleAlgorithm {
     init {
-        if (!OpenCVLoader.initDebug()) {
-            System.loadLibrary("opencv_java4")
-        }
+        OpenCVLoader.initDebug()
     }
 
     fun scale(bitmap: Bitmap, scale: Float): Bitmap {

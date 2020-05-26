@@ -41,11 +41,8 @@ class ComicImageView : AppCompatImageView {
 
 
     override fun setImageDrawable(drawable: Drawable?) {
-        if (attacher == null) {
-            super.setImageDrawable(drawable)
-        } else {
-            attacher?.reset(drawable)
-        }
+        super.setImageDrawable(drawable)
+        attacher?.reset(drawable)
     }
 
     fun setImageDrawableMy(drawable: Drawable?) {

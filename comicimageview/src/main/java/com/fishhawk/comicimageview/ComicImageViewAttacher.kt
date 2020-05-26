@@ -64,7 +64,6 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     private val maxScale = DEFAULT_MAX_SCALE
 
     private val mAllowParentInterceptOnEdge = true
-    private var blockParentIntercept = false
 
     private var mHorizontalScrollEdge = HORIZONTAL_EDGE_BOTH
     private var mVerticalScrollEdge = VERTICAL_EDGE_BOTH
@@ -248,17 +247,18 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     }
 
     fun reset(drawable: Drawable?) {
-        println("wfl")
         if (drawable == null) return
         this.drawable = drawable
 
-        val viewWidth: Float = getImageViewWidth(imageView).toFloat()
-        val viewHeight: Float = getImageViewHeight(imageView).toFloat()
+        val viewWidth = getImageViewWidth(imageView)
+        val viewHeight = getImageViewHeight(imageView)
         val drawableWidth = drawable.intrinsicWidth
         val drawableHeight = drawable.intrinsicHeight
 
-        val widthScale = viewWidth / drawableWidth
-        val heightScale = viewHeight / drawableHeight
+        if (viewWidth == 0 || viewHeight == 0) return
+
+        val widthScale = viewWidth.toFloat() / drawableWidth
+        val heightScale = viewHeight.toFloat() / drawableHeight
 
         initScale = min(1.0f, min(widthScale, heightScale))
         initTranslateX = (viewWidth - drawableWidth * initScale) / 2f
