@@ -61,9 +61,9 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         }
     }
 
-    private val minScale = DEFAULT_MIN_SCALE
-    private val midScale = DEFAULT_MID_SCALE
-    private val maxScale = DEFAULT_MAX_SCALE
+    var minScale = DEFAULT_MIN_SCALE
+    var midScale = DEFAULT_MID_SCALE
+    var maxScale = DEFAULT_MAX_SCALE
 
     private val mAllowParentInterceptOnEdge = true
 
@@ -75,11 +75,6 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     private var initScale = 1.0f
     private var initTranslateX = 0.0f
     private var initTranslateY = 0.0f
-
-    private var fixScale = 1.0f
-    private val matrix: Matrix = Matrix()
-
-    var zoomable = true
     var scaleType = ScaleType.FIT_CENTER
         set(value) {
             if (isSupportedScaleType(value) && value != field) {
@@ -87,6 +82,11 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                 resetLayout()
             }
         }
+
+    private var fixScale = 1.0f
+    private val matrix: Matrix = Matrix()
+
+    var zoomable = true
 
 
     private var customGestureDetector = CustomGestureDetector(
@@ -305,7 +305,8 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                     ScaleType.FIT_XY -> tempMatrix.setRectToRect(
                         tempSrc, tempDst, ScaleToFit.FILL
                     )
-                    else -> {}
+                    else -> {
+                    }
                 }
                 initScale = tempMatrix.getScale()
                 val (tx, ty) = tempMatrix.getTranslate()

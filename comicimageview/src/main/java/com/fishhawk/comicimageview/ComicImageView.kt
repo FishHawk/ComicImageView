@@ -15,40 +15,6 @@ class ComicImageView : AppCompatImageView {
     constructor(context: Context?, attr: AttributeSet?, defStyle: Int)
             : super(context, attr, defStyle)
 
-    private var attacher: ComicImageViewAttacher? = ComicImageViewAttacher(this)
-    private var pendingScaleType: ScaleType? = null
-
-    override fun setScaleType(scaleType: ScaleType) {
-        if (attacher == null) {
-            pendingScaleType = scaleType
-        } else {
-            attacher!!.scaleType = scaleType
-        }
-    }
-
-    override fun getScaleType(): ScaleType {
-        return attacher!!.scaleType
-    }
-
-    init {
-        super.setScaleType(ScaleType.MATRIX)
-        pendingScaleType?.let {
-            attacher!!.scaleType = scaleType
-        }
-        pendingScaleType = null
-    }
-
-    var zoomable: Boolean
-        get() = attacher!!.zoomable
-        set(value) {
-            attacher!!.zoomable = value
-        }
-
-
-    fun setImageDrawableMy(drawable: Drawable?) {
-        super.setImageDrawable(drawable)
-    }
-
     override fun setImageDrawable(drawable: Drawable?) {
         super.setImageDrawable(drawable)
         attacher?.resetDrawable()
@@ -68,5 +34,44 @@ class ComicImageView : AppCompatImageView {
         val changed = super.setFrame(l, t, r, b)
         if (changed) attacher?.resetDrawable()
         return changed
+    }
+
+    override fun setScaleType(scaleType: ScaleType) {
+        if (attacher == null) {
+            pendingScaleType = scaleType
+        } else {
+            attacher.scaleType = scaleType
+        }
+    }
+
+    override fun getScaleType(): ScaleType {
+        return attacher.scaleType
+    }
+
+    private var attacher: ComicImageViewAttacher = ComicImageViewAttacher(this)
+    private var pendingScaleType: ScaleType? = null
+
+    init {
+        super.setScaleType(ScaleType.MATRIX)
+        pendingScaleType?.let {
+            attacher.scaleType = scaleType
+        }
+        pendingScaleType = null
+    }
+
+    fun setImageDrawableMy(drawable: Drawable?) {
+        super.setImageDrawable(drawable)
+    }
+
+    var zoomable: Boolean = attacher.zoomable
+
+    var minimumScale: Float = attacher.minScale
+    var mediumScale: Float = attacher.midScale
+    var maximumScale: Float = attacher.maxScale
+
+    fun setScaleLevels(minimumScale: Float, mediumScale: Float, maximumScale: Float) {
+        attacher.minScale = minimumScale
+        attacher.midScale = mediumScale
+        attacher.maxScale = maximumScale
     }
 }
