@@ -13,7 +13,7 @@ class ActivityViewPager2 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_viewpager2)
 
-        viewPager = findViewById<ViewPager2>(R.id.view_pager)
+        viewPager = findViewById(R.id.view_pager)
         viewPager.offscreenPageLimit = 3
         viewPager.adapter = SamplePagerAdapter()
     }
