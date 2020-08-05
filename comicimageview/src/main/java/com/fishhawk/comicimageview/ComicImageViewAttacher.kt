@@ -12,6 +12,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import androidx.core.graphics.drawable.toBitmap
+import com.fishhawk.comicimageview.listener.OnDragListener
+import com.fishhawk.comicimageview.listener.OnFlingListener
+import com.fishhawk.comicimageview.listener.OnScaleListener
+import com.fishhawk.comicimageview.listener.OnTapListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -91,6 +95,15 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
 
     var zoomable = true
 
+    // Listeners
+    var onScaleListener: OnScaleListener? = null
+    var onFlingListener: OnFlingListener? = null
+    var onDragListener: OnDragListener? = null
+    var onTapListener: OnTapListener? = null
+
+    var onClickListener: View.OnClickListener? = null
+    var onLongClickListener: View.OnLongClickListener? = null
+
 
     private var customGestureDetector = CustomGestureDetector(
         imageView.context,
@@ -101,6 +114,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
             ): Boolean {
                 translateImage(-distanceX, -distanceY)
                 interceptTouchEventIfNeed(-distanceX, -distanceY)
+                onDragListener?.onDrag(distanceX, distanceY)
                 return true
             }
 
@@ -109,11 +123,13 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                 velocityX: Float, velocityY: Float
             ): Boolean {
                 startFlingRunnable(-velocityX, -velocityY)
+                onFlingListener?.onFling(e1, e2, velocityX, velocityY)
                 return true
             }
 
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 scaleImage(detector.scaleFactor, detector.focusX, detector.focusY)
+                onScaleListener?.onScale(detector.scaleFactor, detector.focusX, detector.focusY)
                 return true
             }
 
@@ -135,7 +151,17 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                 } catch (e: ArrayIndexOutOfBoundsException) {
                     // Can sometimes happen when getX() and getY() is called
                 }
-                return super.onDoubleTap(e)
+                return true
+            }
+
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                onClickListener?.onClick(imageView)
+                onTapListener?.onViewTap(imageView, e.x, e.y)
+                return (onClickListener != null || onTapListener != null)
+            }
+
+            override fun onLongPress(e: MotionEvent?) {
+                onLongClickListener?.onLongClick(imageView)
             }
         })
 

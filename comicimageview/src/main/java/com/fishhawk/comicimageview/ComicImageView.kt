@@ -5,6 +5,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
+import com.fishhawk.comicimageview.listener.OnFlingListener
+import com.fishhawk.comicimageview.listener.OnScaleListener
+import com.fishhawk.comicimageview.listener.OnTapListener
 
 
 class ComicImageView : AppCompatImageView {
@@ -80,4 +83,33 @@ class ComicImageView : AppCompatImageView {
 
     var allowParentInterceptOnHorizontalEdge = attacher.allowParentInterceptOnHorizontalEdge
     var allowParentInterceptOnVerticalEdge = attacher.allowParentInterceptOnVerticalEdge
+
+    var onScaleListener: OnScaleListener?
+        get() = attacher.onScaleListener
+        set(value) {
+            attacher.onScaleListener = value
+        }
+    var onFlingListener: OnFlingListener?
+        get() = attacher.onFlingListener
+        set(value) {
+            attacher.onFlingListener = value
+        }
+    var onDragListener: com.fishhawk.comicimageview.listener.OnDragListener?
+        get() = attacher.onDragListener
+        set(value) {
+            attacher.onDragListener = value
+        }
+    var onTapListener: OnTapListener?
+        get() = attacher.onTapListener
+        set(value) {
+            attacher.onTapListener = value
+        }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        attacher.onClickListener = l
+    }
+
+    override fun setOnLongClickListener(l: OnLongClickListener?) {
+        attacher.onLongClickListener = l
+    }
 }
