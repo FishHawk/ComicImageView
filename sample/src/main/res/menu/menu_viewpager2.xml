@@ -16,4 +16,9 @@
         android:id="@+id/action_vertical"
         android:title="@string/menu_viewpager2_vertical"
         app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/action_toggle_listeners"
+        android:title="@string/menu_viewpager2_toggle_listeners"
+        app:showAsAction="collapseActionView" />
 </menu>

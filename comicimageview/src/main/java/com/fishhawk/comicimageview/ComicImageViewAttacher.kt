@@ -209,7 +209,8 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
             }
             handled = customGestureDetector.onTouchEvent(ev) || handled
         }
-        return handled
+        // TODO: Not best way
+        return false
     }
 
     override fun onLayoutChange(

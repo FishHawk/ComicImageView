@@ -13,6 +13,7 @@ class CaseListAdapter(
 
     private val cases = listOf(
         Case("Simple", ActivitySimple::class.java),
+        Case("Recycler View", ActivityRecyclerView::class.java),
         Case("View Pager", ActivityViewPager::class.java),
         Case("View Pager 2", ActivityViewPager2::class.java)
     )

@@ -9,7 +9,7 @@ internal class CustomGestureDetector(
     context: Context?,
     listener: OnGestureListener
 ) {
-    private val scaleDetector: ScaleGestureDetector = ScaleGestureDetector(context, listener)
+    private val scaleDetector = ScaleGestureDetector(context, listener)
     private val normalDetector = GestureDetector(context, listener)
 
     var isDragging = false
@@ -21,7 +21,6 @@ internal class CustomGestureDetector(
         return try {
             scaleDetector.onTouchEvent(ev)
             normalDetector.onTouchEvent(ev)
-            true
         } catch (e: IllegalArgumentException) {
             // Fix for support lib bug, happening when onDestroy is called
             true
@@ -31,6 +30,10 @@ internal class CustomGestureDetector(
     abstract class OnGestureListener :
         GestureDetector.SimpleOnGestureListener(),
         OnScaleGestureListener {
+        override fun onDown(event: MotionEvent): Boolean {
+            return true
+        }
+
         override fun onScaleBegin(detector: ScaleGestureDetector?): Boolean = true
         override fun onScaleEnd(detector: ScaleGestureDetector?) {}
     }

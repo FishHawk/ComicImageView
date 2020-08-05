@@ -5,10 +5,9 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 
-class ActivityViewPager2 : AppCompatActivity() {
-    private lateinit var viewPager: ViewPager2
+class ActivityRecyclerView : AppCompatActivity() {
+    private lateinit var recycler: RecyclerView
     private lateinit var detector: GestureDetector
 
     private var isListenerAdded = false
@@ -16,24 +15,27 @@ class ActivityViewPager2 : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_viewpager2)
+        setContentView(R.layout.activity_recyclerview)
 
-        viewPager = findViewById(R.id.view_pager)
-        viewPager.offscreenPageLimit = 3
-        viewPager.adapter = SamplePagerAdapter(isListenerAdded)
+        recycler = findViewById(R.id.recycler)
+        recycler.adapter = SamplePagerAdapter(isListenerAdded)
 
         detector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onDown(e: MotionEvent?): Boolean {
+                return true
+            }
+
             override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
-                viewPager.makeToast("Long press")
+                recycler.makeToast("Parent clicked")
                 return true
             }
 
             override fun onLongPress(e: MotionEvent?) {
-                viewPager.makeToast("Long press")
+                recycler.makeToast("Parent long clicked")
             }
         })
 
-        viewPager.setOnTouchListener { _, event ->
+        recycler.setOnTouchListener { _, event ->
             detector.onTouchEvent(event)
         }
     }
@@ -46,27 +48,10 @@ class ActivityViewPager2 : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_ltr -> {
-                viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-                viewPager.layoutDirection = ViewPager2.LAYOUT_DIRECTION_LTR
-                viewPager.adapter = SamplePagerAdapter(isListenerAdded)
-                true
-            }
-            R.id.action_rtl -> {
-                viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-                viewPager.layoutDirection = ViewPager2.LAYOUT_DIRECTION_RTL
-                viewPager.adapter = SamplePagerAdapter(isListenerAdded)
-                true
-            }
-            R.id.action_vertical -> {
-                viewPager.orientation = ViewPager2.ORIENTATION_VERTICAL
-                viewPager.adapter = SamplePagerAdapter(isListenerAdded)
-                true
-            }
             R.id.action_toggle_listeners -> {
                 isListenerAdded = !isListenerAdded
-                viewPager.adapter = SamplePagerAdapter(isListenerAdded)
-                viewPager.makeToast(if (isListenerAdded) "Add listener" else "Remove listener")
+                recycler.adapter = SamplePagerAdapter(isListenerAdded)
+                recycler.makeToast(if (isListenerAdded) "Add listener" else "Remove listener")
                 true
             }
             else -> super.onOptionsItemSelected(item)

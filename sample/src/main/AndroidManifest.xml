@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActivitySimple" />
+        <activity android:name=".ActivityRecyclerView" />
         <activity android:name=".ActivityViewPager" />
         <activity android:name=".ActivityViewPager2" />
     </application>

@@ -12,4 +12,5 @@
     <string name="menu_viewpager2_ltr">Left to Right</string>
     <string name="menu_viewpager2_rtl">Right to Left</string>
     <string name="menu_viewpager2_vertical">Vertical</string>
+    <string name="menu_viewpager2_toggle_listeners">Toggle listeners</string>
 </resources>
