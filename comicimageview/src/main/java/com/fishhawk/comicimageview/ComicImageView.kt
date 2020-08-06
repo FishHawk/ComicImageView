@@ -5,9 +5,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
-import com.fishhawk.comicimageview.listener.OnFlingListener
-import com.fishhawk.comicimageview.listener.OnScaleListener
-import com.fishhawk.comicimageview.listener.OnTapListener
 
 
 class ComicImageView : AppCompatImageView {
@@ -94,7 +91,7 @@ class ComicImageView : AppCompatImageView {
         set(value) {
             attacher.onFlingListener = value
         }
-    var onDragListener: com.fishhawk.comicimageview.listener.OnDragListener?
+    var onDragListener: com.fishhawk.comicimageview.OnDragListener?
         get() = attacher.onDragListener
         set(value) {
             attacher.onDragListener = value

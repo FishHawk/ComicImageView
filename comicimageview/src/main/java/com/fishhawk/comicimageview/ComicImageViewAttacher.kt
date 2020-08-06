@@ -12,10 +12,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import androidx.core.graphics.drawable.toBitmap
-import com.fishhawk.comicimageview.listener.OnDragListener
-import com.fishhawk.comicimageview.listener.OnFlingListener
-import com.fishhawk.comicimageview.listener.OnScaleListener
-import com.fishhawk.comicimageview.listener.OnTapListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -119,7 +115,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
             }
 
             override fun onFling(
-                e1: MotionEvent?, e2: MotionEvent?,
+                e1: MotionEvent, e2: MotionEvent,
                 velocityX: Float, velocityY: Float
             ): Boolean {
                 startFlingRunnable(-velocityX, -velocityY)
@@ -156,7 +152,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
                 onClickListener?.onClick(imageView)
-                onTapListener?.onViewTap(imageView, e.x, e.y)
+                onTapListener?.onTap(imageView, e)
                 return (onClickListener != null || onTapListener != null)
             }
 
