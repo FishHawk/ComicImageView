@@ -67,6 +67,7 @@ class ComicImageView : AppCompatImageView {
 
 
     var zoomable = attacher.zoomable
+    var isBetterScaleAlgorithmEnabled = attacher.isBetterScaleAlgorithmEnabled
 
     var minimumScale = attacher.minScale
     var mediumScale = attacher.midScale

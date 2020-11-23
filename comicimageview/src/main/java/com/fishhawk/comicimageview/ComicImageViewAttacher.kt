@@ -12,10 +12,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
 import androidx.core.graphics.drawable.toBitmap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.min
 
@@ -37,6 +33,7 @@ private fun Matrix.getTranslate(): Pair<Float, Float> {
 }
 
 
+@SuppressLint("ClickableViewAccessibility")
 class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchListener,
     View.OnLayoutChangeListener {
 
@@ -132,21 +129,17 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
             override fun onScaleEnd(detector: ScaleGestureDetector?) {
                 val scale = getScale()
                 if (scale in minScale..maxScale)
-                    moveScaleFromMatrixToBitmapAsync()
+                    resizeBitmap()
             }
 
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                try {
-                    val scale = getScale()
-                    val targetScale = when {
-                        scale < midScale -> midScale
-                        scale >= midScale && scale < maxScale -> maxScale
-                        else -> minScale
-                    }
-                    startScaleRunnable(targetScale)
-                } catch (e: ArrayIndexOutOfBoundsException) {
-                    // Can sometimes happen when getX() and getY() is called
+                val originScale = getScale()
+                val targetScale = when {
+                    originScale < midScale -> midScale
+                    originScale >= midScale && originScale < maxScale -> maxScale
+                    else -> minScale
                 }
+                startScaleRunnable(targetScale)
                 return true
             }
 
@@ -181,30 +174,29 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, ev: MotionEvent): Boolean {
+        if (!zoomable) return false
+
         var handled = false
-        if (zoomable) {
-            when (ev.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    v.parent.requestDisallowInterceptTouchEvent(true)
-                    cancelFlingRunnable()
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> {
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                cancelFlingRunnable()
+            }
+            MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
+                val scale = getScale()
+                val targetScale = when {
+                    scale < minScale -> minScale
+                    scale > maxScale -> maxScale
+                    else -> null
                 }
-                MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-                    val scale = getScale()
-                    val targetScale = when {
-                        scale < minScale -> minScale
-                        scale > maxScale -> maxScale
-                        else -> null
-                    }
-                    targetScale?.let {
-                        startScaleRunnable(it)
-                        handled = true
-                    }
+                targetScale?.let {
+                    startScaleRunnable(it)
+                    handled = true
                 }
             }
-            handled = customGestureDetector.onTouchEvent(ev) || handled
         }
+        handled = customGestureDetector.onTouchEvent(ev) || handled
         return handled
     }
 
@@ -239,26 +231,24 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     }
 
     private fun cancelFlingRunnable() {
-        currentFlingRunnable?.apply { cancelFling() }
+        currentFlingRunnable?.cancelFling()
         currentFlingRunnable = null
     }
 
     private fun startScaleRunnable(targetScale: Float) {
         correctBound()
         val rect = getDisplayRect(matrix)
-        rect.let {
-            val runnable = ScaleRunnable(
-                imageView,
-                getScale(), targetScale,
-                it.centerX(), it.centerY(),
-                { newScale, focalX, focalY ->
-                    val deltaScale = newScale / getScale()
-                    scaleImage(deltaScale, focalX, focalY)
-                },
-                { moveScaleFromMatrixToBitmap() }
-            )
-            imageView.post(runnable)
-        }
+        val runnable = ScaleRunnable(
+            imageView,
+            getScale(), targetScale,
+            rect.centerX(), rect.centerY(),
+            { newScale, focalX, focalY ->
+                val deltaScale = newScale / getScale()
+                scaleImage(deltaScale, focalX, focalY)
+            },
+            { resizeBitmap() }
+        )
+        imageView.post(runnable)
     }
 
 
@@ -343,12 +333,20 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
                 initTranslateY = ty
             }
         }
-        matrix.reset()
+
         matrix.setTranslate(initTranslateX, initTranslateY)
-        moveScaleFromMatrixToBitmap()
+        matrix.preScale(initScale, initScale)
+        fixScale = 1 / initScale
+        applyMatrix()
+
+        resizeBitmap()
     }
 
-    private fun moveScaleFromMatrixToBitmap() {
+    var isBetterScaleAlgorithmEnabled = true
+
+    private fun resizeBitmap() {
+        if (!isBetterScaleAlgorithmEnabled) return
+
         val scale = matrix.getScale()
         val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale * scale)
         val newD = BitmapDrawable(imageView.context.resources, bitmap)
@@ -356,27 +354,8 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
 
         val (tx, ty) = matrix.getTranslate()
         fixScale *= scale
-        matrix.reset()
         matrix.setTranslate(tx, ty)
         applyMatrix()
-    }
-
-    private fun moveScaleFromMatrixToBitmapAsync() {
-        val scale = matrix.getScale()
-
-        GlobalScope.launch(Dispatchers.Default) {
-            val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale * scale)
-            withContext(Dispatchers.Main) {
-                val newD = BitmapDrawable(imageView.context.resources, bitmap)
-                (imageView as ComicImageView).setImageDrawableMy(newD)
-
-                val (tx, ty) = matrix.getTranslate()
-                fixScale *= scale
-                matrix.reset()
-                matrix.setTranslate(tx, ty)
-                applyMatrix()
-            }
-        }
     }
 
     private fun applyMatrix() {
