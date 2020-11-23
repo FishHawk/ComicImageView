@@ -8,11 +8,11 @@ import androidx.appcompat.widget.AppCompatImageView
 
 
 class ComicImageView : AppCompatImageView {
-    constructor(context: Context?) : this(context, null)
+    constructor(context: Context) : this(context, null)
 
-    constructor(context: Context?, attr: AttributeSet?) : this(context, attr, 0)
+    constructor(context: Context, attr: AttributeSet?) : this(context, attr, 0)
 
-    constructor(context: Context?, attr: AttributeSet?, defStyle: Int)
+    constructor(context: Context, attr: AttributeSet?, defStyle: Int)
             : super(context, attr, defStyle)
 
     override fun setImageDrawable(drawable: Drawable?) {
