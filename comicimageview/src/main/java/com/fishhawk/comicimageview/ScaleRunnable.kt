@@ -4,6 +4,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Interpolator
 
+
 class ScaleRunnable(
     private val view: View,
     private val originScale: Float, private val targetScale: Float,
@@ -11,6 +12,7 @@ class ScaleRunnable(
     private val scaleFunction: (Float, Float, Float) -> Unit,
     private val onFinished: () -> Unit
 ) : Runnable {
+
     private val interpolator: Interpolator = AccelerateDecelerateInterpolator()
     private val startTime: Long = System.currentTimeMillis()
     private val duration = DEFAULT_DURATION

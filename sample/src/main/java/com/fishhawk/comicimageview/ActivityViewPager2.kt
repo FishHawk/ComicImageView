@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 
+
 class ActivityViewPager2 : AppCompatActivity() {
+
     private lateinit var viewPager: ViewPager2
     private lateinit var detector: GestureDetector
 

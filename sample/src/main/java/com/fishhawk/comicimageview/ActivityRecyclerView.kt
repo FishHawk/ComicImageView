@@ -6,7 +6,9 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 
+
 class ActivityRecyclerView : AppCompatActivity() {
+
     private lateinit var recycler: RecyclerView
     private lateinit var detector: GestureDetector
 

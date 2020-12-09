@@ -12,8 +12,6 @@ internal class CustomGestureDetector(
     private val scaleDetector = ScaleGestureDetector(context, listener)
     private val normalDetector = GestureDetector(context, listener)
 
-    var isDragging = false
-        private set
     val isScaling: Boolean
         get() = scaleDetector.isInProgress
 

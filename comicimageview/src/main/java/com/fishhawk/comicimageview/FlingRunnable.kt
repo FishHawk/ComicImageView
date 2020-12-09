@@ -13,6 +13,7 @@ class FlingRunnable(
     velocityX: Int, velocityY: Int,
     private val listener: (Float, Float) -> Unit
 ) : Runnable {
+
     private val scroller: OverScroller = OverScroller(view.context)
     private var currentX = 0
     private var currentY = 0
