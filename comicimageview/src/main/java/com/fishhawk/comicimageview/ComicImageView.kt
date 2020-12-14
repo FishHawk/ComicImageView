@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 
 
@@ -60,69 +61,30 @@ class ComicImageView : AppCompatImageView {
         pendingScaleType = null
     }
 
-
     fun setImageDrawableMy(drawable: Drawable?) {
         super.setImageDrawable(drawable)
     }
 
+    var zoomable = true
+    var isOpenCVEnabled = true
 
-    var zoomable
-        get() = attacher.zoomable
-        set(value) {
-            attacher.zoomable = value
-        }
-
-    var isBetterScaleAlgorithmEnabled
-        get() = attacher.isBetterScaleAlgorithmEnabled
-        set(value) {
-            attacher.isBetterScaleAlgorithmEnabled = value
-        }
-
-    var minimumScale
-        get() = attacher.minScale
-        set(value) {
-            attacher.minScale = value
-        }
-    var mediumScale
-        get() = attacher.midScale
-        set(value) {
-            attacher.midScale = value
-        }
-    var maximumScale
-        get() = attacher.maxScale
-        set(value) {
-            attacher.maxScale = value
-        }
-
-    fun setScaleLevels(minimumScale: Float, mediumScale: Float, maximumScale: Float) {
-        attacher.minScale = minimumScale
-        attacher.midScale = mediumScale
-        attacher.maxScale = maximumScale
+    companion object {
+        private const val DEFAULT_MAX_SCALE = 2.5f
+        private const val DEFAULT_MID_SCALE = 1.5f
+        private const val DEFAULT_MIN_SCALE = 1.0f
     }
 
-    var allowParentInterceptOnHorizontalEdge = attacher.allowParentInterceptOnHorizontalEdge
-    var allowParentInterceptOnVerticalEdge = attacher.allowParentInterceptOnVerticalEdge
+    var minScale = DEFAULT_MIN_SCALE
+    var midScale = DEFAULT_MID_SCALE
+    var maxScale = DEFAULT_MAX_SCALE
 
-    var onScaleListener: OnScaleListener?
-        get() = attacher.onScaleListener
-        set(value) {
-            attacher.onScaleListener = value
-        }
-    var onFlingListener: OnFlingListener?
-        get() = attacher.onFlingListener
-        set(value) {
-            attacher.onFlingListener = value
-        }
-    var onDragListener: com.fishhawk.comicimageview.OnDragListener?
-        get() = attacher.onDragListener
-        set(value) {
-            attacher.onDragListener = value
-        }
-    var onTapListener: OnTapListener?
-        get() = attacher.onTapListener
-        set(value) {
-            attacher.onTapListener = value
-        }
+    var allowParentInterceptOnHorizontalEdge = true
+    var allowParentInterceptOnVerticalEdge = false
+
+    var onScaleListener: OnScaleListener? = null
+    var onFlingListener: OnFlingListener? = null
+    var onDragListener: com.fishhawk.comicimageview.OnDragListener? = null
+    var onTapListener: OnTapListener? = null
 
     override fun setOnClickListener(l: OnClickListener?) {
         attacher.onClickListener = l

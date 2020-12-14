@@ -41,11 +41,11 @@
         app:layout_constraintTop_toBottomOf="@id/scale_type" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/better_zoom"
+        android:id="@+id/opencv_enabled"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Better zoom"
+        android:text="OpenCV enabled"
         android:textColor="?android:attr/textColorPrimary"
         app:layout_constraintTop_toBottomOf="@id/zoomable" />
 </androidx.constraintlayout.widget.ConstraintLayout>

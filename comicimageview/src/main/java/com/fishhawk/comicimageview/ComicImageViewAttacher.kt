@@ -35,13 +35,9 @@ private fun Matrix.getTranslate(): Pair<Float, Float> {
 
 @SuppressLint("ClickableViewAccessibility")
 class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTouchListener,
-    View.OnLayoutChangeListener {
+        View.OnLayoutChangeListener {
 
     companion object {
-        private const val DEFAULT_MAX_SCALE = 2.5f
-        private const val DEFAULT_MID_SCALE = 1.5f
-        private const val DEFAULT_MIN_SCALE = 1.0f
-
         private const val HORIZONTAL_EDGE_NONE = -1
         private const val HORIZONTAL_EDGE_LEFT = 0
         private const val HORIZONTAL_EDGE_RIGHT = 1
@@ -61,15 +57,40 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
         }
     }
 
-    var minScale = DEFAULT_MIN_SCALE
-    var midScale = DEFAULT_MID_SCALE
-    var maxScale = DEFAULT_MAX_SCALE
+    // Listeners
+    val onScaleListener: OnScaleListener?
+        get() = imageView.onScaleListener
+    val onFlingListener: OnFlingListener?
+        get() = imageView.onFlingListener
+    val onDragListener: OnDragListener?
+        get() = imageView.onDragListener
+    val onTapListener: OnTapListener?
+        get() = imageView.onTapListener
 
-    var allowParentInterceptOnHorizontalEdge = true
-    var allowParentInterceptOnVerticalEdge = false
+    var onClickListener: View.OnClickListener? = null
+    var onLongClickListener: View.OnLongClickListener? = null
+
+    // Properties
+    private val minScale
+        get() = imageView.minScale
+    private val midScale
+        get() = imageView.midScale
+    private val maxScale
+        get() = imageView.maxScale
+
+    private val zoomable
+        get() = imageView.zoomable
+    private val isOpenCVEnabled
+        get() = imageView.isOpenCVEnabled
+
+    private val allowParentInterceptOnHorizontalEdge
+        get() = imageView.allowParentInterceptOnHorizontalEdge
+    private val allowParentInterceptOnVerticalEdge
+        get() = imageView.allowParentInterceptOnVerticalEdge
+
+
     private var mHorizontalScrollEdge = HORIZONTAL_EDGE_BOTH
     private var mVerticalScrollEdge = VERTICAL_EDGE_BOTH
-
 
     private var drawable = imageView.drawable
     private var initScale = 1.0f
@@ -86,73 +107,61 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
     private var fixScale = 1.0f
     private val matrix: Matrix = Matrix()
 
-    var zoomable = true
-
-    // Listeners
-    var onScaleListener: OnScaleListener? = null
-    var onFlingListener: OnFlingListener? = null
-    var onDragListener: OnDragListener? = null
-    var onTapListener: OnTapListener? = null
-
-    var onClickListener: View.OnClickListener? = null
-    var onLongClickListener: View.OnLongClickListener? = null
-
-
     private var customGestureDetector = CustomGestureDetector(
-        imageView.context,
-        object : CustomGestureDetector.OnGestureListener() {
-            override fun onScroll(
-                e1: MotionEvent?, e2: MotionEvent?,
-                distanceX: Float, distanceY: Float
-            ): Boolean {
-                translateImage(-distanceX, -distanceY)
-                interceptTouchEventIfNeed(-distanceX, -distanceY)
-                onDragListener?.onDrag(distanceX, distanceY)
-                return true
-            }
-
-            override fun onFling(
-                e1: MotionEvent, e2: MotionEvent,
-                velocityX: Float, velocityY: Float
-            ): Boolean {
-                startFlingRunnable(-velocityX, -velocityY)
-                onFlingListener?.onFling(e1, e2, velocityX, velocityY)
-                return true
-            }
-
-            override fun onScale(detector: ScaleGestureDetector): Boolean {
-                scaleImage(detector.scaleFactor, detector.focusX, detector.focusY)
-                onScaleListener?.onScale(detector.scaleFactor, detector.focusX, detector.focusY)
-                return true
-            }
-
-            override fun onScaleEnd(detector: ScaleGestureDetector?) {
-                val scale = getScale()
-                if (scale in minScale..maxScale)
-                    resizeBitmap()
-            }
-
-            override fun onDoubleTap(e: MotionEvent): Boolean {
-                val originScale = getScale()
-                val targetScale = when {
-                    originScale < midScale -> midScale
-                    originScale >= midScale && originScale < maxScale -> maxScale
-                    else -> minScale
+            imageView.context,
+            object : CustomGestureDetector.OnGestureListener() {
+                override fun onScroll(
+                        e1: MotionEvent?, e2: MotionEvent?,
+                        distanceX: Float, distanceY: Float
+                ): Boolean {
+                    translateImage(-distanceX, -distanceY)
+                    interceptTouchEventIfNeed(-distanceX, -distanceY)
+                    onDragListener?.onDrag(distanceX, distanceY)
+                    return true
                 }
-                startScaleRunnable(targetScale)
-                return true
-            }
 
-            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                onClickListener?.onClick(imageView)
-                onTapListener?.onTap(imageView, e)
-                return (onClickListener != null || onTapListener != null)
-            }
+                override fun onFling(
+                        e1: MotionEvent, e2: MotionEvent,
+                        velocityX: Float, velocityY: Float
+                ): Boolean {
+                    startFlingRunnable(-velocityX, -velocityY)
+                    onFlingListener?.onFling(e1, e2, velocityX, velocityY)
+                    return true
+                }
 
-            override fun onLongPress(e: MotionEvent?) {
-                onLongClickListener?.onLongClick(imageView)
-            }
-        })
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    scaleImage(detector.scaleFactor, detector.focusX, detector.focusY)
+                    onScaleListener?.onScale(detector.scaleFactor, detector.focusX, detector.focusY)
+                    return true
+                }
+
+                override fun onScaleEnd(detector: ScaleGestureDetector?) {
+                    val scale = getScale()
+                    if (scale in minScale..maxScale)
+                        resizeBitmap()
+                }
+
+                override fun onDoubleTap(e: MotionEvent): Boolean {
+                    val originScale = getScale()
+                    val targetScale = when {
+                        originScale < midScale -> midScale
+                        originScale >= midScale && originScale < maxScale -> maxScale
+                        else -> minScale
+                    }
+                    startScaleRunnable(targetScale)
+                    return true
+                }
+
+                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                    onClickListener?.onClick(imageView)
+                    onTapListener?.onTap(imageView, e)
+                    return (onClickListener != null || onTapListener != null)
+                }
+
+                override fun onLongPress(e: MotionEvent?) {
+                    onLongClickListener?.onLongClick(imageView)
+                }
+            })
 
     private fun interceptTouchEventIfNeed(dx: Float, dy: Float) {
         if (!customGestureDetector.isScaling) {
@@ -165,7 +174,7 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
                     || mVerticalScrollEdge == VERTICAL_EDGE_BOTTOM && dy <= -1f
 
             if ((allowParentInterceptOnHorizontalEdge && reachHorizontalEdge)
-                || (allowParentInterceptOnVerticalEdge && reachVerticalEdge)
+                    || (allowParentInterceptOnVerticalEdge && reachVerticalEdge)
             ) {
                 imageView.parent.requestDisallowInterceptTouchEvent(false)
             }
@@ -202,9 +211,9 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
     }
 
     override fun onLayoutChange(
-        v: View?,
-        left: Int, top: Int, right: Int, bottom: Int,
-        oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
+            v: View?,
+            left: Int, top: Int, right: Int, bottom: Int,
+            oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int
     ) {
         if (left != oldLeft || top != oldTop || right != oldRight || bottom != oldBottom) {
             resetLayout()
@@ -221,10 +230,10 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
     private fun startFlingRunnable(velocityX: Float, velocityY: Float) {
         correctBound()
         currentFlingRunnable = FlingRunnable(
-            imageView,
-            getDisplayRect(matrix),
-            getImageViewWidth(imageView), getImageViewHeight(imageView),
-            velocityX.toInt(), velocityY.toInt()
+                imageView,
+                getDisplayRect(matrix),
+                getImageViewWidth(imageView), getImageViewHeight(imageView),
+                velocityX.toInt(), velocityY.toInt()
         ) { dx, dy ->
             translateImage(dx, dy)
         }
@@ -240,14 +249,14 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
         correctBound()
         val rect = getDisplayRect(matrix)
         val runnable = ScaleRunnable(
-            imageView,
-            getScale(), targetScale,
-            rect.centerX(), rect.centerY(),
-            { newScale, focalX, focalY ->
-                val deltaScale = newScale / getScale()
-                scaleImage(deltaScale, focalX, focalY)
-            },
-            { resizeBitmap() }
+                imageView,
+                getScale(), targetScale,
+                rect.centerX(), rect.centerY(),
+                { newScale, focalX, focalY ->
+                    val deltaScale = newScale / getScale()
+                    scaleImage(deltaScale, focalX, focalY)
+                },
+                { resizeBitmap() }
         )
         imageView.post(runnable)
     }
@@ -314,16 +323,16 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
                 tempMatrix.reset()
                 when (scaleType) {
                     ScaleType.FIT_CENTER -> tempMatrix.setRectToRect(
-                        tempSrc, tempDst, ScaleToFit.CENTER
+                            tempSrc, tempDst, ScaleToFit.CENTER
                     )
                     ScaleType.FIT_START -> tempMatrix.setRectToRect(
-                        tempSrc, tempDst, ScaleToFit.START
+                            tempSrc, tempDst, ScaleToFit.START
                     )
                     ScaleType.FIT_END -> tempMatrix.setRectToRect(
-                        tempSrc, tempDst, ScaleToFit.END
+                            tempSrc, tempDst, ScaleToFit.END
                     )
                     ScaleType.FIT_XY -> tempMatrix.setRectToRect(
-                        tempSrc, tempDst, ScaleToFit.FILL
+                            tempSrc, tempDst, ScaleToFit.FILL
                     )
                     else -> {
                     }
@@ -343,10 +352,8 @@ class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTou
         resizeBitmap()
     }
 
-    var isBetterScaleAlgorithmEnabled = true
-
     private fun resizeBitmap() {
-        if (!isBetterScaleAlgorithmEnabled) return
+        if (!isOpenCVEnabled) return
 
         val scale = matrix.getScale()
         val bitmap = ScaleAlgorithm.scale(drawable.toBitmap(), initScale * fixScale * scale)

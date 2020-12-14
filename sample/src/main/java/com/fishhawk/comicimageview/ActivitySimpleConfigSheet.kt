@@ -8,12 +8,12 @@ import java.lang.IllegalStateException
 
 
 class ActivitySimpleConfigSheet(
-    context: Context,
-    imageView: ComicImageView
+        context: Context,
+        imageView: ComicImageView
 ) : ConfigSheet(context) {
 
     private val binding = ActivitySimpleConfigSheetBinding.inflate(
-        LayoutInflater.from(context), null, false
+            LayoutInflater.from(context), null, false
     )
 
     init {
@@ -44,8 +44,8 @@ class ActivitySimpleConfigSheet(
             imageView.zoomable = it
         }
 
-        bind(binding.betterZoom, imageView.isBetterScaleAlgorithmEnabled) {
-            imageView.isBetterScaleAlgorithmEnabled = it
+        bind(binding.opencvEnabled, imageView.isOpenCVEnabled) {
+            imageView.isOpenCVEnabled = it
         }
 
         setContentView(binding.root)
