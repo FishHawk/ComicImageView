@@ -66,12 +66,33 @@ class ComicImageView : AppCompatImageView {
     }
 
 
-    var zoomable = attacher.zoomable
-    var isBetterScaleAlgorithmEnabled = attacher.isBetterScaleAlgorithmEnabled
+    var zoomable
+        get() = attacher.zoomable
+        set(value) {
+            attacher.zoomable = value
+        }
 
-    var minimumScale = attacher.minScale
-    var mediumScale = attacher.midScale
-    var maximumScale = attacher.maxScale
+    var isBetterScaleAlgorithmEnabled
+        get() = attacher.isBetterScaleAlgorithmEnabled
+        set(value) {
+            attacher.isBetterScaleAlgorithmEnabled = value
+        }
+
+    var minimumScale
+        get() = attacher.minScale
+        set(value) {
+            attacher.minScale = value
+        }
+    var mediumScale
+        get() = attacher.midScale
+        set(value) {
+            attacher.midScale = value
+        }
+    var maximumScale
+        get() = attacher.maxScale
+        set(value) {
+            attacher.maxScale = value
+        }
 
     fun setScaleLevels(minimumScale: Float, mediumScale: Float, maximumScale: Float) {
         attacher.minScale = minimumScale

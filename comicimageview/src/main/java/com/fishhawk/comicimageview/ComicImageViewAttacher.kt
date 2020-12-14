@@ -34,7 +34,7 @@ private fun Matrix.getTranslate(): Pair<Float, Float> {
 
 
 @SuppressLint("ClickableViewAccessibility")
-class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchListener,
+class ComicImageViewAttacher(private val imageView: ComicImageView) : View.OnTouchListener,
     View.OnLayoutChangeListener {
 
     companion object {
@@ -175,6 +175,7 @@ class ComicImageViewAttacher(private val imageView: ImageView) : View.OnTouchLis
     }
 
     override fun onTouch(v: View, ev: MotionEvent): Boolean {
+        println(zoomable)
         if (!zoomable) return false
 
         var handled = false
